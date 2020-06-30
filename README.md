@@ -60,7 +60,7 @@ module load vtune/2018
 #### 1.a) Code default version and compilation
 As a first step, the default configuration of the program using **2000 rows and columns and 500 timesteps** was evaluated with **APS** using **4 MPI processes**. The Makefile uses the compilation flags `-O3` which sets up level-3 vectorialization and `-Wall` enabling compiler Warning messages. The results of this analysis can be found in the folder `aps_np4_rowscols2000`:
 
-![APS](RUN/aps_np4_rowscols2000_NT500_COPT.png)
+![APS](APS/aps_np4_rowscols2000_NT500_COPT.png)
 
 The main diagnostic indicates that the program is MPI bounded. 
 
@@ -71,7 +71,7 @@ The domain size and time steps were increased using **6000 rows and columns** an
 
 The results of the APS analysis are in folder `aps_np4_rowscols6000_NT2000_COPT`.
 
-![APS](RUN/aps_np4_rowscols6000_NT2000_COPT.png)
+![APS](APS/aps_np4_rowscols6000_NT2000_COPT.png)
 
 The costs of the MPI initialize and finalize functions are now much more reasonable, and more time is now spent in the `Waitall` MPI instruction.
 
@@ -104,7 +104,7 @@ The `Waitall` happens during the `exchange_finalize` function. Some MPI process 
 
 To asses if the output of the png files could or not be the origin of the MPI imbalance that makes the code MPI bound, let's run the program on the same configuration, but removing the output of the png files. The results of this analysis are in the folder `aps_results_np4_rowscols6000_NT2000_COPTnoimgwritting` and the APS summary is the following:
 
-![APS](RUN/aps_np4_rowscols6000_NT2000_COPTnoimgwritting.png)
+![APS](APS/aps_np4_rowscols6000_NT2000_COPTnoimgwritting.png)
 
 Removing the writting of the png files, the target of max 10% of MPI time is reached, we are now at 6.44% which is quite satisfying. The first guess is then confirmed, the origin of the MPI bound is the writting of the png files that is made in serial, after collecting the fields on the master process. 
 
@@ -129,13 +129,13 @@ The first thing to do is to add the compilation flags allowing the compiler to t
 
 To do so, the flags `-march=native` and `-mavx2` were added into the Makefile; the results of the APS analysis for this new run can be found in folder `aps_results_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting` and the APS summary is the following:
 
-![APS](RUN/aps_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting.png)
+![APS](APS/aps_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting.png)
 
 As we can notice the 256bits vectorization capacity is still used only partially, and the FPU utilization did not increase much.  As an additional step, we choosed to add as well the `-Ofast` flag, which enables `-ffast-math`, which in turn enables `-fno-math-errno`, `-funsafe-math-optimizations`, `-ffinite-math-only`, `-fno-rounding-math`, `-fno-signaling-nans` and `-fcx-limited-range`.  
 
 The results of the APS analysis for this new run can be found in folder `aps_results_np4_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting` and the APS summary is the following:
 
-![APS](RUN/aps_np4_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
+![APS](APS/aps_np4_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
 
 As we can see, with this configuration the full 256bits vectorization capacity is used, but the FPU Utilization remains low.
 
@@ -145,7 +145,7 @@ Some other flags could bring additional benefit, like `-fno-signed-zeros` and  `
 
 In the actual state, the main reason for the high MPI time and low FPU utilization is for sure at least partially linked to the problem size, as using 4 MPI processes for a quite small computational domain and such a short simulation time has a cost that his quite important respect to the actual computational time. In facts, as shown by the next APS summary (corresponding to the results in folder `aps_results_np2_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting`), reducing the number of MPI processes to only 2 processes lowers the cost of the restart file (`File_write_at_all` MPI function) given that the computational time increases. Consequently the FPU Utilization increases, but only because twice more computational work has been done while the main MPI cost (writting the restart file) remained unchanged.
 
-![APS](RUN/aps_np2_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
+![APS](APS/aps_np2_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
 
 
 
