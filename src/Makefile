@@ -1,7 +1,10 @@
 CC=mpicc
-CCFLAGS=-O3 -Wall 
-LDFLAGS=
-LIBS=-lpng -lm
+#CCFLAGS=-O3 -Wall
+#CCFLAGS=-Ofast -Wall -march=native 
+CCFLAGS=-Ofast -march=native -mavx2 -Wall 
+LDFLAGS=-L/galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/lib
+LIBS=-lpng -lm 
+INCLUDE=-I /galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/include 
 
 EXE=heat_mpi
 OBJS=core.o setup.o utilities.o io.o main.o
@@ -24,7 +27,7 @@ $(EXE): $(OBJS) $(OBJS_PNG)
 	$(CC) $(CCFLAGS) $(OBJS) $(OBJS_PNG) -o $@ $(LDFLAGS) $(LIBS)
 
 %.o: %.c
-	$(C_COMPILER) $(CCFLAGS) -c $< -o $@
+	$(C_COMPILER) $(CCFLAGS) -c $< -o $@ $(INCLUDE)
 
 .PHONY: clean
 clean:
