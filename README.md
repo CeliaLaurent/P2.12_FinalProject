@@ -1,11 +1,27 @@
 # P2.12_FinalProject
 The source code used in this project was taken from https://repository.prace-ri.eu/git/CodeVault/training-material/parallel-programming/MPI/-/tree/master/heat-equation. It solves two dimensional heat equation with MPI parallelization. The code features non-blocking point-to-point communication, user defined datatypes, collective communication, and parallel I/O with MPI I/O.
 
-The goal of this project is to use the Intel performance analysis tools to understand how to improve the source code.
-Find out what are the bottlenecks
+The goal of this project is to use the Intel performance analysis tools to understand how to improve the source code and find out what are the bottlenecks.
+
+The Intel tool suite for performance analysis includes the following softwares:
+- **Intel Application Performance Snapshot**: *Take a quick look at your application's performance to see if it is well optimized for modern hardware*
+  -  *MPI parallelism*
+  -  *OpenMP parallelism*
+  -  *Memory access*
+  -  *FPU Utilization*
+  -  *I/O efficiency*
+
+
+- **Intel Advisor**: *Design and optimize high-performing code for modern computer architectures. Effectively use more cores, vectorization, memory, and heterogeneous processing..*
+- **Intel VTune Profiler** : *Locate performance bottlenecks fast. Advanced sampling and profiling techniques quickly analyze your code, isolate issues, and deliver insights for optimizing performance on modern processors.*
+- **Intel Trace Analyzer and Collector** : *a graphical tool for understanding MPI application behavior, quickly finding bottlenecks, improving correctness, and achieving high performance for parallel cluster applications based on Intel architecture.*
 
 ## 0. Setup
-The experiments were done in galileo.
+The experiments were done on the **Galileo** cluster of the **CINECA**.
+
+`sourceme.sh` is a file provided in the main folder of this repository which can be sourced (`source sourceme.sh`) in order to run automatically the setup described in this section.
+
+##### 0.a) libpng
 
 The source code requires the libpng library to be installed, this was done by:
 ```
@@ -14,9 +30,17 @@ cd libpng-1.6.37/
 ./configure --prefix=/galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37
 make 
 make install
+```
+Then, in order to run, the program needs to know at run time what is the path to the libpng libraries, this is done by command:
 
 ```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/lib
+```
+
+##### 0.b) Intel libraries
+
 To enable the compilation of the source code, the following modules had to be loaded:
+
 ```
 module load intel/pe-xe-2018--binary
 module load intelmpi/2018--binary
@@ -37,11 +61,18 @@ mpicc -O3 -Wall  -c pngwriter.c -o pngwriter.o -I /galileo/home/userexternal/cla
 mpicc -O3 -Wall  core.o setup.o utilities.o io.o main.o pngwriter.o -o heat_mpi  -lpng -lm -L /galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/lib
 
 ```
-To run the program, it needs to know at run time what is the path to the libpng libraries, this is done by command:
+##### 0.c) Intel tool suite
+
+On the CINECA- Galileo cluster the various Intel Performance analysis tools can be accessed after loading the vtune module:
+
 ```
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/lib
+module load vtune/2018
 ```
+
+##### 0.d) Running the program with MPI
+
 And the program can then be run with:
+
 ```
 mpirun -np 4 ./heat_mpi
 ```
@@ -52,13 +83,8 @@ mpirun -np 4 ./heat_mpi
 
 This tool is part of the Intel VTune Amplifier suite.
 
-On the CINECA galileo cluster it can be accessed after loading the vtune module:
-```
-module load vtune/2018
-```
-
 #### 1.a) Code default version and compilation
-As a first step, the default configuration of the program using **2000 rows and columns and 500 timesteps** was evaluated with **APS** using **4 MPI processes**. The Makefile uses the compilation flags `-O3` which sets up level-3 vectorialization and `-Wall` enabling compiler Warning messages. The results of this analysis can be found in the folder `aps_np4_rowscols2000`:
+As a first step, the default configuration of the program using **2000 rows and columns and 500 timesteps** was evaluated with **APS** using **4 MPI processes**. The Makefile uses the compilation flags `-O3` which sets up level-3 vectorialization and `-Wall` enabling compiler Warning messages. The results of this analysis can be found in the folder `aps_np4_rowscols2000_NT500_COPT`:
 
 ![APS](APS/aps_np4_rowscols2000_NT500_COPT.png)
 
@@ -116,7 +142,7 @@ To cope with this, there could be different solutions:
 
 #### 1.d) Improve FPU Utilization with compilation flags
 
-Once removed the origin of the MPI bound, APS identifies as the main remaining problem the memory bound issue, and suggests to use Intel VTune Amplifier to analyse it. Before to do so, we can notice that another critical aspect identified by APS is the PFU Utilization : 7.15% while the target is >50%.
+Once removed the origin of the MPI bound, APS identifies that the main remaining problem is the underutilization of the Floating Point Unit : 7.15% while the target is >50%.
 
 In the FPU Utilization box, APS indicates that only 50% of the floating point vectorization capacity is done, and that all the floating points instructions are packed in 128bits, and gives the following additional informations:
 
@@ -141,21 +167,22 @@ As we can see, with this configuration the full 256bits vectorization capacity i
 
 Some other flags could bring additional benefit, like `-fno-signed-zeros` and  `-fno-trapping-math` , but if they were to be used the results of the program should be checked carefully.
 
-
-
 In the actual state, the main reason for the high MPI time and low FPU utilization is for sure at least partially linked to the problem size, as using 4 MPI processes for a quite small computational domain and such a short simulation time has a cost that his quite important respect to the actual computational time. In facts, as shown by the next APS summary (corresponding to the results in folder `aps_results_np2_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting`), reducing the number of MPI processes to only 2 processes lowers the cost of the restart file (`File_write_at_all` MPI function) given that the computational time increases. Consequently the FPU Utilization increases, but only because twice more computational work has been done while the main MPI cost (writting the restart file) remained unchanged.
+
+The FPU Utilization remains anyway much too low, the Application Performance Snapshots suggests to use **Intel Advisor** to get more insights on the origin of the problem.
 
 ![APS](APS/aps_np2_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
 
+At this point, APS identifies that the main remaining problem is the memory bound issue, and suggests to use the **Memory Access Analysis** tool of **Intel VTune Profile** to analyse it. Before to do so, we can notice that another critical aspect identified by APS is the PFU Utilization
+
+To get more insights on how to improve the floating point unit instructions per second, and the memory bound issue, it is time to change tool and see which indications we could get using  **Intel Advisor** and **Intel VTune Profiler**.
 
 
-To get more insights on how to improve the floating point unit instructions per second, and the memory bound issue, it is time to change tool and see which indications we could get with VTune Amplifier.
+## 
+
+## 2. Intel Advisor
 
 
 
+## 3. Intel VTune Profiler
 
-## 2. Intel VTune
-
-## 3. Intel Advisor
-
-## 4. Optimize the code
