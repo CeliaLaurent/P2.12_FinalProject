@@ -173,7 +173,7 @@ The FPU Utilization remains anyway much too low, the Application Performance Sna
 
 ![APS](APS/aps_np2_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
 
-At this point, APS identifies that the main remaining problem is the memory bound issue, and suggests to use the **Memory Access Analysis** tool of **Intel VTune Profile** to analyse it. Before to do so, we can notice that another critical aspect identified by APS is the PFU Utilization
+At this point, APS identifies that the main remaining problem is the memory bound issue, and suggests to use the **Memory Access Analysis** tool of **Intel VTune Profiler** to analyse it. 
 
 To get more insights on how to improve the floating point unit instructions per second, and the memory bound issue, it is time to change tool and see which indications we could get using  **Intel Advisor** and **Intel VTune Profiler**.
 
@@ -182,7 +182,48 @@ To get more insights on how to improve the floating point unit instructions per 
 
 ## 2. Intel Advisor
 
+To test Intel Advisor, the original source code version (writing the `png` files) was restored, the `miicc` compiler was used with the optimization flags `-Ofast -march=core-avx2`  adding as well the flags `-qopt-report=5 -qopt-report-phase=all -g` so that compilation produces additional informations allowing Intel Advisor to get more insights on the source code.
 
+The program run and its analysis were performed using the following commands:
+
+```bash
+MPIranks=2
+Nrow_cols=6000
+Nt=2000
+Version='origin'
+CASE=np${MPIranks}_rowscols${Nrow_cols}_NT${Nt}_${Version}
+mpirun -np 2 advixe-cl -collect survey -collect tripcounts -collect map -collect dependencies -no-auto-finalize -project-dir ./adv_${CASE}  --search-dir src:r=../src/${Version}  ../src/${Version}/heat_mpi
+rm HEAT_RESTART.dat
+rm heat*.png
+advixe-cl --snapshot --project-dir ./adv_${CASE} --pack --cache-sources --cache-binaries   --search-dir src:r=../src/${Version}/ -- ./adv_${CASE}
+```
+
+This allowed to obtain the following analysis for the original source code:
+
+![origin.Summary](ADV/adv_np2_rowscols6000_NT2000_origin.Summary.png)
+
+![origin.Survey_and_Roofline](ADV/adv_np2_rowscols6000_NT2000_origin.Survey_and_Roofline.png)
+
+Intel Advisor identifies that the `evolve_interior` and `evolve_edges` functions contain a loop that is not vectorized because the compiler assumed that there might be data dependency.
+
+In facts, `curr` and `prev` are two pointers towards objects of the same type passed by reference to these functions, so that the compiler has no guaranty that the pointers point to different memory addresses. 
+
+We know that they are actually different, as two distinct memory areas are allocated in the `main.c`. Consequently, we can modify the headers of these functions (in `heat.c` and `core.c`) using the `restrict` keyword that guaranties to the compiler that such pointers does not have any alias :
+
+```c
+void evolve_interior(field *__restrict__ curr, field *__restrict__ prev, double a, double dt);
+void evolve_edges(field *__restrict__ curr, field *__restrict__ prev, double a, double dt);
+```
+
+With this modification done, the next screen-shot of Intel Advisor indicates that the loops were vectorized using avx2 with a 100% of efficiency, and in facts the time to run `evolve_interior` is reduced almost by a factor 2.
+
+![restrict.Summary](ADV/adv_np2_rowscols6000_NT2000_restrict.Summary.png)
+
+![restrict.Survey_and_Roofline](ADV/adv_np2_rowscols6000_NT2000_restrict.Survey_and_Roofline.png)
+
+
+
+As expected, the other main time demanding component is `write_field` which is responsible of the `png` outputs.
 
 ## 3. Intel VTune Profiler
 
