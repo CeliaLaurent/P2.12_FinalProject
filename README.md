@@ -4,7 +4,7 @@ The source code used in this project was taken from https://repository.prace-ri.
 The goal of this project is to use the Intel performance analysis tools to understand how to improve the source code and find out what are the bottlenecks.
 
 The Intel tool suite for performance analysis includes the following softwares:
-- **Intel Application Performance Snapshot**: *Take a quick look at your application's performance to see if it is well optimized for modern hardware*
+- **Intel Application Performance Snapshot (APS)**: *Take a quick look at your application's performance to see if it is well optimized for modern hardware*
   -  *MPI parallelism*
   -  *OpenMP parallelism*
   -  *Memory access*
@@ -13,8 +13,8 @@ The Intel tool suite for performance analysis includes the following softwares:
 
 
 - **Intel Advisor**: *Design and optimize high-performing code for modern computer architectures. Effectively use more cores, vectorization, memory, and heterogeneous processing..*
-- **Intel VTune Profiler** : *Locate performance bottlenecks fast. Advanced sampling and profiling techniques quickly analyze your code, isolate issues, and deliver insights for optimizing performance on modern processors.*
-- **Intel Trace Analyzer and Collector** : *a graphical tool for understanding MPI application behavior, quickly finding bottlenecks, improving correctness, and achieving high performance for parallel cluster applications based on Intel architecture.*
+- **Intel VTune Profiler** or **VTune Amplifier** : *Locate performance bottlenecks fast. Advanced sampling and profiling techniques quickly analyze your code, isolate issues, and deliver insights for optimizing performance on modern processors.*
+- **Intel Trace Analyzer and Collector (ITAC)** : *a graphical tool for understanding MPI application behavior, quickly finding bottlenecks, improving correctness, and achieving high performance for parallel cluster applications based on Intel architecture.*
 
 ## 0. Setup
 The experiments were done on the **Galileo** cluster of the **CINECA**.
