@@ -203,7 +203,7 @@ We use the same configurations as *section 1.a*, noting that we can only run at 
 
 ![aps_mpirun_np1](DevCloud/APS/aps_mpirun_np2.png)
 
-Ignoring the differences coming from the fact that the two microarchitectures are differnet, we can also see that MPI time occupies around 47% of the total time, and hence the application is MPI bound at this stage. As explained in *section 1.b* this issue can be rectified by increasing the problem size, as with small problem size the overhead of MPI initializaton and communication cost is large compared to compute time, as can be seen from rank-to-rank communication matrix below, also this shows that there is a data transfer imabalance between two ranks:
+Ignoring the differences coming from the fact that the two microarchitectures are differnet, we can also see that MPI time occupies around 47% of the total time, and hence the application is MPI bound at this stage. As explained in *section 1.b* this issue can be rectified by increasing the problem size, as with small problem size the overhead of MPI initializaton and communication cost is large compared to compute time, as can be seen from rank-to-rank communication matrix below, also this shows that there is a data transfer imbalance between two ranks:
 
 ![aps_mpirun_np2_comm_matrix](DevCloud/APS/aps_mpirun_np2_comm_matrix.jpeg)
 
@@ -212,8 +212,6 @@ To generate the figure above we use:
 aps-report -x --format=html <result_name>
 ``` 
 Furthermore we can remove writing png files and reduce the MPI time even more, as explained in *section 1.c*.
-
-
 
 ## 
 
@@ -258,9 +256,36 @@ With this modification done, the next screen-shot of Intel Advisor indicates tha
 
 ![restrict.Survey_and_Roofline](ADV/adv_np2_rowscols6000_NT2000_restrict.Survey_and_Roofline.png)
 
-
-
 As expected, the other main time demanding component is `write_field` which is responsible of the `png` outputs.
+
+### 2.1 Intel Advisor on Intel&reg; DevCloud
+
+To collect `survey` results with Intel Advisor with 1 MPI process, we do:
+
+```
+mpirun -n 1 -gtool "advixe-cl -collect survey -no-auto-finalize -project-dir ./adv_np1:0" ./heat_mpi
+```
+
+and we also do the same for `tripcounts`, `map`, and`dependencies`, after that we pack the results and view the cumultive result in `advisor-gui`:
+
+![advisor_roofline](DevCloud/ADV/advisor_roofline_summary_np1.jpeg)
+
+Also below we can see the roofline chart:
+
+![advisor_roofline_chart](DevCloud/ADV/advisort_roofline_chart_np1.jpeg)
+
+##
 
 ## 3. Intel VTune Profiler
 
+### 3.1 Intel VTune Profiler on Intel&reg; DevCloud
+
+To generate the a `summary` report with vtune with 2 MPI processes, we do:
+
+```
+vtune -report summary -format=html -report-knob show-issues=false -r vtune_test.s001-n007/ > vtune_summary_np2.html
+```
+
+We can see the results below:
+
+![vtune_summary_np2](DevCloud/VTU/vtune_summary_np2.png)
