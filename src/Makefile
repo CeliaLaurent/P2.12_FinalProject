@@ -1,7 +1,7 @@
 CC=mpiicc
 #CCFLAGS=-O3 -Wall
 #CCFLAGS=-Ofast -Wall -march=native 
-CCFLAGS=-Ofast -march=native -mavx2 -Wall -qopt-report=5 -qopt-report-phase=all -g
+CCFLAGS=-Ofast -march=core-avx2 -Wall -qopt-report=5 -qopt-report-phase=all -g
 LDFLAGS=-L/galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/lib
 LIBS=-lpng -lm 
 INCLUDE=-I /galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/include 
@@ -31,4 +31,4 @@ $(EXE): $(OBJS) $(OBJS_PNG)
 
 .PHONY: clean
 clean:
-	-/bin/rm -f $(EXE) a.out *.o *.png *~
+	-/bin/rm -f $(EXE) a.out *.o *.optrpt *.png *~
