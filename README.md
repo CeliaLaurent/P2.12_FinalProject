@@ -272,7 +272,7 @@ and we also do the same for `tripcounts`, `map`, and`dependencies`, after that w
 
 Also below we can see the roofline chart:
 
-![advisor_roofline_chart](DevCloud/ADV/advisort_roofline_chart_np1.jpeg)
+![advisor_roofline_chart](DevCloud/ADV/advisor_roofline_chart_np1.jpeg)
 
 ##
 
