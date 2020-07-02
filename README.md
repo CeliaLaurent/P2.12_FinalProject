@@ -77,6 +77,16 @@ And the program can then be run with:
 mpirun -np 4 ./heat_mpi
 ```
 
+### 0.1 Setup on Intel&reg; DevCloud
+This sections explains the setup done on Intel DevCloud cluster.
+
+As explained in previous section we install the `libpng` on DevCloud on our home directory. Although we can export the `libpng` path to `LD_LIBRARY_PATH`, here we modify the Makefile and add the link time flag, `LDFLAGS=-L/home/u44658/lib/` and add the includes to compile time with `INCS=-I/home/u44658/include/`, and we change the compiler from gnu `mpicc` to intel `mpiicc`.
+All other tools come preloaded on DevCloud, though we have to source the proper environmental variables, for Applications Performance Snapshot, we do `source $(locate apsvars.sh)`, and for Intel Advisor, we do `source $(locate advixe-vars.sh)`.
+We note that DevCloud only allows 1 nodes and 2 cores per user, so we enter a compute node interactively, like this: 
+```
+qsub -l nodes=1:batch:ppn=2 -d . -I
+```
+Also we note that DevCloud platform is **Skylake**, while Galileo is **Broadwell**.
 
 
 ## 1. Application Performance Snapshot 
@@ -176,6 +186,33 @@ The FPU Utilization remains anyway much too low, the Application Performance Sna
 At this point, APS identifies that the main remaining problem is the memory bound issue, and suggests to use the **Memory Access Analysis** tool of **Intel VTune Profiler** to analyse it. 
 
 To get more insights on how to improve the floating point unit instructions per second, and the memory bound issue, it is time to change tool and see which indications we could get using  **Intel Advisor** and **Intel VTune Profiler**.
+
+
+### 1.1 Application Performance Snapshot on Intel&reg; DevCloud
+
+For comaprison reasons, here we put also the results from Intel DevClous.
+To get the analysis results with APS, first we run `aps` through `mpirun` and then generate the html reports.
+```
+mpirun -np <NP> aps ./heat_mpi
+aps --report=<results_directory>
+```
+
+#### 1.1.a) Code default version and compilation
+
+We use the same configurations as *section 1.a*, noting that we can only run at most with **2 MPI processes**. Here we can see the results with 2 mpi processes.
+
+![aps_mpirun_np1](DevCloud/APS/aps_mpirun_np2.png)
+
+Ignoring the differences coming from the fact that the two microarchitectures are differnet, we can also see that MPI time occupies around 47% of the total time, and hence the application is MPI bound at this stage. As explained in *section 1.b* this issue can be rectified by increasing the problem size, as with small problem size the overhead of MPI initializaton and communication cost is large compared to compute time, as can be seen from rank-to-rank communication matrix below, also this shows that there is a data transfer imabalance between two ranks:
+
+![aps_mpirun_np2_comm_matrix](DevCloud/APS/aps_mpirun_np2_comm_matrix.jpeg)
+
+To generate the figure above we use: 
+```
+aps-report -x --format=html <result_name>
+``` 
+Furthermore we can remove writing png files and reduce the MPI time even more, as explained in *section 1.c*.
+
 
 
 ## 
