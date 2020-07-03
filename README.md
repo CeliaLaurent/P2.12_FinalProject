@@ -1,4 +1,7 @@
+
+
 # P2.12_FinalProject
+
 The source code used in this project was taken from https://repository.prace-ri.eu/git/CodeVault/training-material/parallel-programming/MPI/-/tree/master/heat-equation. It solves two dimensional heat equation with MPI parallelization. The code features non-blocking point-to-point communication, user defined datatypes, collective communication, and parallel I/O with MPI I/O.
 
 The goal of this project is to use the Intel performance analysis tools to understand how to improve the source code and find out what are the bottlenecks.
@@ -96,7 +99,7 @@ This tool is part of the Intel VTune Amplifier suite.
 #### 1.a) Code default version and compilation
 As a first step, the default configuration of the program using **2000 rows and columns and 500 timesteps** was evaluated with **APS** using **4 MPI processes**. The Makefile uses the compilation flags `-O3` which sets up level-3 vectorialization and `-Wall` enabling compiler Warning messages. The results of this analysis can be found in the folder `aps_np4_rowscols2000_NT500_COPT`:
 
-![APS](APS/aps_np4_rowscols2000_NT500_COPT.png)
+![APS](CINECA-Galileo/APS/aps_np4_rowscols2000_NT500_COPT.png)
 
 The main diagnostic indicates that the program is MPI bounded. 
 
@@ -107,7 +110,7 @@ The domain size and time steps were increased using **6000 rows and columns** an
 
 The results of the APS analysis are in folder `aps_np4_rowscols6000_NT2000_COPT`.
 
-![APS](APS/aps_np4_rowscols6000_NT2000_COPT.png)
+![APS](CINECA-Galileo/APS/aps_np4_rowscols6000_NT2000_COPT.png)
 
 The costs of the MPI initialize and finalize functions are now much more reasonable, and more time is now spent in the `Waitall` MPI instruction.
 
@@ -140,7 +143,7 @@ The `Waitall` happens during the `exchange_finalize` function. Some MPI process 
 
 To asses if the output of the png files could or not be the origin of the MPI imbalance that makes the code MPI bound, let's run the program on the same configuration, but removing the output of the png files. The results of this analysis are in the folder `aps_results_np4_rowscols6000_NT2000_COPTnoimgwritting` and the APS summary is the following:
 
-![APS](APS/aps_np4_rowscols6000_NT2000_COPTnoimgwritting.png)
+![APS](CINECA-Galileo/APS/aps_np4_rowscols6000_NT2000_COPTnoimgwritting.png)
 
 Removing the writting of the png files, the target of max 10% of MPI time is reached, we are now at 6.44% which is quite satisfying. The first guess is then confirmed, the origin of the MPI bound is the writting of the png files that is made in serial, after collecting the fields on the master process. 
 
@@ -165,13 +168,13 @@ The first thing to do is to add the compilation flags allowing the compiler to t
 
 To do so, the flags `-march=native` and `-mavx2` were added into the Makefile; the results of the APS analysis for this new run can be found in folder `aps_results_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting` and the APS summary is the following:
 
-![APS](APS/aps_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting.png)
+![APS](CINECA-Galileo/APS/aps_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting.png)
 
 As we can notice the 256bits vectorization capacity is still used only partially, and the FPU utilization did not increase much.  As an additional step, we choosed to add as well the `-Ofast` flag, which enables `-ffast-math`, which in turn enables `-fno-math-errno`, `-funsafe-math-optimizations`, `-ffinite-math-only`, `-fno-rounding-math`, `-fno-signaling-nans` and `-fcx-limited-range`.  
 
 The results of the APS analysis for this new run can be found in folder `aps_results_np4_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting` and the APS summary is the following:
 
-![APS](APS/aps_np4_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
+![APS](CINECA-Galileo/APS/aps_np4_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
 
 As we can see, with this configuration the full 256bits vectorization capacity is used, but the FPU Utilization remains low.
 
@@ -181,7 +184,7 @@ In the actual state, the main reason for the high MPI time and low FPU utilizati
 
 The FPU Utilization remains anyway much too low, the Application Performance Snapshots suggests to use **Intel Advisor** to get more insights on the origin of the problem.
 
-![APS](APS/aps_np2_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
+![APS](CINECA-Galileo/APS/aps_np2_rowscols6000_NT2000_COPT-Ofast-marchnative-mavx2_noimgwritting.png)
 
 At this point, APS identifies that the main remaining problem is the memory bound issue, and suggests to use the **Memory Access Analysis** tool of **Intel VTune Profiler** to analyse it. 
 
@@ -227,17 +230,19 @@ Nrow_cols=6000
 Nt=2000
 Version='origin'
 CASE=np${MPIranks}_rowscols${Nrow_cols}_NT${Nt}_${Version}
-mpirun -np 2 advixe-cl -collect survey -collect tripcounts -collect map -collect dependencies -no-auto-finalize -project-dir ./adv_${CASE}  --search-dir src:r=../src/${Version}  ../src/${Version}/heat_mpi
-rm HEAT_RESTART.dat
-rm heat*.png
+for what in survey tripcounts map dependencies ; do
+    mpirun -np 2 advixe-cl -collect ${what} -no-auto-finalize -project-dir ./adv_${CASE}  --search-dir src:r=../src/${Version}  ../src/${Version}/heat_mpi
+    rm HEAT_RESTART.dat
+    rm heat*.png
+done
 advixe-cl --snapshot --project-dir ./adv_${CASE} --pack --cache-sources --cache-binaries   --search-dir src:r=../src/${Version}/ -- ./adv_${CASE}
 ```
 
 This allowed to obtain the following analysis for the original source code:
 
-![origin.Summary](ADV/adv_np2_rowscols6000_NT2000_origin.Summary.png)
+![origin.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin.Summary.png)
 
-![origin.Survey_and_Roofline](ADV/adv_np2_rowscols6000_NT2000_origin.Survey_and_Roofline.png)
+![origin.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin.Survey_and_Roofline.png)
 
 Intel Advisor identifies that the `evolve_interior` and `evolve_edges` functions contain a loop that is not vectorized because the compiler assumed that there might be data dependency.
 
@@ -252,9 +257,9 @@ void evolve_edges(field *__restrict__ curr, field *__restrict__ prev, double a, 
 
 With this modification done, the next screen-shot of Intel Advisor indicates that the loops were vectorized using avx2 with a 100% of efficiency, and in facts the time to run `evolve_interior` is reduced almost by a factor 2.
 
-![restrict.Summary](ADV/adv_np2_rowscols6000_NT2000_restrict.Summary.png)
+![restrict.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_restrict.Summary.png)
 
-![restrict.Survey_and_Roofline](ADV/adv_np2_rowscols6000_NT2000_restrict.Survey_and_Roofline.png)
+![restrict.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_restrict.Survey_and_Roofline.png)
 
 As expected, the other main time demanding component is `write_field` which is responsible of the `png` outputs.
 
@@ -277,6 +282,42 @@ Also below we can see the roofline chart:
 ##
 
 ## 3. Intel VTune Profiler
+
+Intel VTune Amplifier Performance Profiler was run for the `origin` and `restrict` versions of the source code, using the following commands :
+
+```bash
+MPIranks=2
+Nrow_cols=4000
+Nt=2000
+HOST=$(hostname)
+for collect in hpc-performance concurrency hotspots memory-consumption advanced-hotspots locksandwaits ; do
+ for Version in origin restrict ; do
+  CASE=np${MPIranks}_RC${Nrow_cols}_NT${Nt}_${Version}_collect-${collect}
+  rm -r $CASE.$HOST
+  mpiexec -np ${MPIranks}  amplxe-cl -collect ${collect}  -result-dir $CASE ../../src/$Version/heat_mpi $Nrow_cols $Nrow_cols $Nt
+  amplxe-cl   -report summary -report-knob show-issues=false -format=text -r $CASE.$HOST  > $CASE.$HOST.summary.out
+  rm HEAT_RESTART.dat
+  rm heat*.png
+ done
+done
+```
+
+The Analysis run by VTune Performance Profiler shows for the `origin` version of the source code that using 2 MPI procs, in average the number of active CPUs is 1. 
+
+Among the time to solution: 117 seconds, the time where no CPU is active is very important : 30 seconds, that might correspond to the time spent waiting for memory access. And the time were both CPUs are active is actually very small: less than 20 seconds. 
+
+This analysis confirms what has been previously identified : the png writting and consequent MPI wait, coupled with the  memory bounds make the MPI balancing very unefficient.
+
+![VTU/origin.Summary](CINECA-Galileo/VTU/np4_RC4000_NT2000_origin_collect-hpc-performance_summary.png)
+![VTU/origin.bottom-up](CINECA-Galileo/VTU/np4_RC4000_NT2000_origin_collect-hpc-performance_bottom-up.png)
+
+We can see that using the `restrict` version the code is slightly more efficient, the loop in `evolve_interior` pass from 86 seconds to 69 seconds, however the improvement is smaller than what was observed using Advisor. We can see that for the `restrict` version this loop is actually 100% vectorized (avx2 256pack), against 100% scalar in the `origin` version and the global FPU Utilization slightly increased from 7% to 10%. 
+
+There is an improvement in the time needed to do this critical loop but it remains small, because vectorizing this loop makes it become completely memory bounded, in facts the global memory bound of the code that pass from 10% in the `origin` version to 40% in the `restrict` version.
+
+![VTU/restrict.Summary](CINECA-Galileo/VTU/np4_RC4000_NT2000_restrict_collect-hpc-performance_summary.png)
+
+![VTU/restrict.bottom-up](CINECA-Galileo/VTU/np4_RC4000_NT2000_restrict_collect-hpc-performance_bottom-up.png)
 
 ### 3.1 Intel VTune Profiler on Intel&reg; DevCloud
 

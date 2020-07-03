@@ -1,0 +1,44 @@
+Elapsed Time: 117.744s
+SP GFLOPS: 6.015
+Effective CPU Utilization: 2.6%
+    Average Effective CPU Utilization: 0.942 out of 36
+    MPI Imbalance: 4.449s (3.8%)
+    MPI Rank on the Critical Path
+        MPI Busy Wait Time: 0.301s (0.3%)
+
+            Top Serial Hotspots (outside parallel regions)
+            Function                       Module 
+            -----------------------------  -------
+            hfi1_kern_exp_rcv_alloc_flows  hfi1.ko
+            hfi1_kern_exp_rcv_dealloc      hfi1.ko
+            qp_priv_init                   hfi1.ko
+            hfi1_poll                      hfi1.ko
+            hfi1_put_tid                   hfi1.ko
+            [Others]                       N/A    
+Memory Bound: 10.8% of Pipeline Slots
+    Cache Bound: 13.5% of Clockticks
+    DRAM Bound: 2.9% of Clockticks
+    NUMA: % of Remote Accesses: 6.0%
+FPU Utilization: 7.5%
+    SP FLOPs per Cycle: 2.391 Out of 32
+    Vector Capacity Usage: 25.0%
+    FP Instruction Mix
+        % of Packed FP Instr.: 0.0%
+            % of 128-bit: 0.0%
+            % of 256-bit: 0.0%
+        % of Scalar FP Instr.: 100.0%
+    FP Arith/Mem Rd Instr. Ratio: 1.583
+    FP Arith/Mem Wr Instr. Ratio: 6.956
+Collection and Platform Info
+    Application Command Line: ../../src/origin/heat_mpi "4000" "4000" "2000" 
+    Operating System: 3.10.0-693.21.1.el7.x86_64 NAME="CentOS Linux" VERSION="7 (Core)" ID="centos" ID_LIKE="rhel fedora" VERSION_ID="7" PRETTY_NAME="CentOS Linux 7 (Core)" ANSI_COLOR="0;31" CPE_NAME="cpe:/o:centos:centos:7" HOME_URL="https://www.centos.org/" BUG_REPORT_URL="https://bugs.centos.org/"  CENTOS_MANTISBT_PROJECT="CentOS-7" CENTOS_MANTISBT_PROJECT_VERSION="7" REDHAT_SUPPORT_PRODUCT="centos" REDHAT_SUPPORT_PRODUCT_VERSION="7" 
+    MPI Process Rank: 3
+    Computer Name: r032c01s06
+    Result Size: 443 MB 
+    Collection start time: 14:00:34 02/07/2020 UTC
+    Collection stop time: 14:02:34 02/07/2020 UTC
+    Collector Type: Driverless Perf per-process sampling
+    CPU
+        Name: Intel(R) Xeon(R) Processor code named Broadwell
+        Frequency: 2.300 GHz
+        Logical CPU Count: 36

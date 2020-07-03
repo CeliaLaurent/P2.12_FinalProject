@@ -1,0 +1,45 @@
+
+Collection and Platform Info
+----------------------------
+Parameter                 np4_RC4000_NT2000_origin_collect-concurrency.r032c01s06                                                                                                                                                                                                                                                                                                                                                                            
+------------------------  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Application Command Line  ../../src/origin/heat_mpi "4000" "4000" "2000"                                                                                                                                                                                                                                                                                                                                                                                     
+Operating System          3.10.0-693.21.1.el7.x86_64 NAME="CentOS Linux"
+VERSION="7 (Core)"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="7"
+PRETTY_NAME="CentOS Linux 7 (Core)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:centos:centos:7"
+HOME_URL="https://www.centos.org/"
+BUG_REPORT_URL="https://bugs.centos.org/"
+
+CENTOS_MANTISBT_PROJECT="CentOS-7"
+CENTOS_MANTISBT_PROJECT_VERSION="7"
+REDHAT_SUPPORT_PRODUCT="centos"
+REDHAT_SUPPORT_PRODUCT_VERSION="7"
+
+MPI Process Rank          1                                                                                                                                                                                                                                                                                                                                                                                                                                  
+Computer Name             r032c01s06                                                                                                                                                                                                                                                                                                                                                                                                                         
+Result Size               12116812                                                                                                                                                                                                                                                                                                                                                                                                                           
+Collection start time     14:08:25 02/07/2020 UTC                                                                                                                                                                                                                                                                                                                                                                                                            
+Collection stop time      14:09:35 02/07/2020 UTC                                                                                                                                                                                                                                                                                                                                                                                                            
+Collector Type            User-mode sampling and tracing                                                                                                                                                                                                                                                                                                                                                                                                     
+
+CPU
+---
+Parameter          np4_RC4000_NT2000_origin_collect-concurrency.r032c01s06
+-----------------  -------------------------------------------------------
+Name               Intel(R) Xeon(R) Processor code named Broadwell        
+Frequency          2300000290                                             
+Logical CPU Count  36                                                     
+
+Summary
+-------
+Average Concurrency:      3.883  
+Elapsed Time:             68.044 
+Paused Time:              0.0    
+CPU Time:                 127.790
+Wait Time:                275.631
+Average CPU Utilization:  1.493  
