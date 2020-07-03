@@ -240,7 +240,7 @@ advixe-cl --snapshot --project-dir ./adv_${CASE} --pack --cache-sources --cache-
 
 This allowed to obtain the following analysis for the original source code:
 
-![origin.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin_Summary.png)
+![origin.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin_Summary.jpg)
 
 ![origin.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin_Survey_and_Roofline.png)
 
