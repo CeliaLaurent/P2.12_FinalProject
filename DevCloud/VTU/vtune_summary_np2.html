@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<html><style>
+        .metric-name {
+        font-weight: 600;
+        min-width: 14em;
+        display: inline-block;
+        }
+
+        .metric-value {
+        margin-left: 1em;
+        color: #336;
+        }
+
+        .metric-value-with-issue {
+        margin-left: 1em;
+        color: #C33;
+        }
+
+        li {
+        list-style-type: none;
+        }
+
+        ul {
+        margin-left: 1.5em;
+        padding-left: 0em;
+        }
+
+        body {
+        margin: 0;
+        paddind: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #336;
+        }
+
+        pre {
+        white-space:pre-wrap;
+        max-width: 40em;
+        color: #633;
+        }
+
+        .issue {
+        border-left: 3px solid #C33;
+        padding: 0.3em 0.3em 0.3em 1em;
+        }
+
+        table {
+        margin: 0 1.5em;
+        }
+
+        th, td {
+        text-align: left;
+        }
+
+        td {
+        color: #333;
+        }
+
+        th {
+        border-bottom: 2px solid #336;
+        font-weight: 600;
+        }
+
+        .table-value {
+        margin-right: 1.5em;
+        }
+
+        .brand {
+        background-color: #0071c5;
+        padding: 0.5em 1.5em;
+        width: 100%;
+        color: white;
+        font-weight: 600;
+        }
+
+        .recommendation-placeholder {
+        background-color: #eaecee;
+        padding: 1em;
+        }
+
+        .recommendation-placeholder p {
+        font-weight: 600;
+        margin: 0;
+        }
+
+        .recommendation {
+        border-left: 3px solid #bbb;
+        padding: 0.3em 0.3em 0.3em 1em;
+        margin: 0 0 0 1.5em;
+        }
+
+        .recommendation-metric {
+        font-weight: 600;
+        min-width: 14em;
+        display: inline-block;
+        margin: 0 0 0 1.5em;
+        }
+
+      </style><body><div class="brand">Intel® oneAPI VTune™ Profiler 2021.1.0 beta07</div><ul><li><span class="metric-name">Elapsed Time:
+        </span><span class="metric-value">6.247s</span><ul><li><span class="metric-name">SP GFLOPS:
+        </span><span class="metric-value">0.000</span></li></ul><ul><li><span class="metric-name">DP GFLOPS:
+        </span><span class="metric-value">2.606</span></li></ul><ul><li><span class="metric-name">x87 GFLOPS:
+        </span><span class="metric-value">0.000</span></li></ul><ul><li><span class="metric-name">CPI Rate:
+        </span><span class="metric-value">0.680</span></li></ul><ul><li><span class="metric-name">Average CPU Frequency:
+        </span><span class="metric-value">3.516 GHz </span></li></ul><ul><li><span class="metric-name">Total Thread Count:
+        </span><span class="metric-value">3</span></li></ul></li></ul><ul><li><span class="metric-name">Effective Physical Core Utilization:
+        </span><span class="metric-value-with-issue">9.9% (1.192 out of 12)</span><ul><li><span class="metric-name">Effective Logical Core Utilization:
+        </span><span class="metric-value-with-issue">5.1% (1.215 out of 24)</span></li></ul><ul><li><span class="metric-name">MPI Imbalance:
+        </span><span class="metric-value">0.045s (0.7%)</span></li></ul><ul><li><span class="metric-name">MPI Rank on the Critical Path:
+        </span><span class="metric-value"/><ul><li><span class="metric-name">MPI Busy Wait Time:
+        </span><span class="metric-value">0.090s (1.4%)</span></li></ul></li></ul></li></ul><ul><li><span class="metric-name">Memory Bound:
+        </span><span class="metric-value-with-issue">27.0% of Pipeline Slots</span><ul><li><span class="metric-name">Cache Bound:
+        </span><span class="metric-value">11.8% of Clockticks</span></li></ul><ul><li><span class="metric-name">DRAM Bound:
+        </span><span class="metric-value">0.8% of Clockticks</span><ul><li><span class="metric-name">DRAM Bandwidth Bound:
+        </span><span class="metric-value">0.0% of Elapsed Time</span></li></ul></li></ul><ul><li><span class="metric-name">NUMA: % of Remote Accesses:
+        </span><span class="metric-value">0.0%</span></li></ul><ul><li><span class="metric-name">Bandwidth Utilization:
+        </span><span class="metric-value"/><table><tr><th><span class="table-value">Bandwidth Domain</span></th><th><span class="table-value">Platform Maximum</span></th><th><span class="table-value">Observed Maximum</span></th><th><span class="table-value">Average</span></th><th><span class="table-value">% of Elapsed Time with High BW Utilization(%)</span></th></tr><tr><td><span class="table-value">DRAM, GB/sec</span></td><td><span class="table-value">122</span></td><td><span class="table-value">19.200</span></td><td><span class="table-value">4.380</span></td><td><span class="table-value">0.0%</span></td></tr><tr><td><span class="table-value">DRAM Single-Package, GB/sec</span></td><td><span class="table-value">61</span></td><td><span class="table-value">10.900</span></td><td><span class="table-value">2.343</span></td><td><span class="table-value">0.0%</span></td></tr></table></li></ul></li></ul><ul><li><span class="metric-name">Vectorization:
+        </span><span class="metric-value">100.0% of Packed FP Operations</span><ul><li><span class="metric-name">Instruction Mix:
+        </span><span class="metric-value"/><ul><li><span class="metric-name">SP FLOPs:
+        </span><span class="metric-value">0.0% of uOps</span><ul><li><span class="metric-name">Packed:
+        </span><span class="metric-value">0.0% from SP FP</span><ul><li><span class="metric-name">128-bit:
+        </span><span class="metric-value">0.0% from SP FP</span></li></ul><ul><li><span class="metric-name">256-bit:
+        </span><span class="metric-value">0.0% from SP FP</span></li></ul><ul><li><span class="metric-name">512-bit:
+        </span><span class="metric-value">0.0% from SP FP</span></li></ul></li></ul><ul><li><span class="metric-name">Scalar:
+        </span><span class="metric-value">0.0% from SP FP</span></li></ul></li></ul><ul><li><span class="metric-name">DP FLOPs:
+        </span><span class="metric-value">25.7% of uOps</span><ul><li><span class="metric-name">Packed:
+        </span><span class="metric-value">100.0% from DP FP</span><ul><li><span class="metric-name">128-bit:
+        </span><span class="metric-value-with-issue">100.0% from DP FP</span></li></ul><ul><li><span class="metric-name">256-bit:
+        </span><span class="metric-value">0.0% from DP FP</span></li></ul><ul><li><span class="metric-name">512-bit:
+        </span><span class="metric-value">0.0% from DP FP</span></li></ul></li></ul><ul><li><span class="metric-name">Scalar:
+        </span><span class="metric-value">0.0% from DP FP</span></li></ul></li></ul><ul><li><span class="metric-name">x87 FLOPs:
+        </span><span class="metric-value">0.0% of uOps</span></li></ul><ul><li><span class="metric-name">Non-FP:
+        </span><span class="metric-value">74.3% of uOps</span></li></ul></li></ul><ul><li><span class="metric-name">FP Arith/Mem Rd Instr. Ratio:
+        </span><span class="metric-value">1.009</span></li></ul><ul><li><span class="metric-name">FP Arith/Mem Wr Instr. Ratio:
+        </span><span class="metric-value">2.751</span></li></ul></li></ul><ul><li><span class="metric-name">Collection and Platform Info:
+        </span><span class="metric-value"/><ul><li><span class="metric-name">Application Command Line:
+        </span><span class="metric-value">./heat_mpi </span></li></ul><ul><li><span class="metric-name">Operating System:
+        </span><span class="metric-value">4.15.18 NAME="Ubuntu"
+VERSION="18.04.4 LTS (Bionic Beaver)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 18.04.4 LTS"
+VERSION_ID="18.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=bionic
+UBUNTU_CODENAME=bionic</span></li></ul><ul><li><span class="metric-name">Computer Name:
+        </span><span class="metric-value">s001-n007</span></li></ul><ul><li><span class="metric-name">Result Size:
+        </span><span class="metric-value">17 MB </span></li></ul><ul><li><span class="metric-name">Collection start time:
+        </span><span class="metric-value">15:14:47 30/06/2020 UTC</span></li></ul><ul><li><span class="metric-name">Collection stop time:
+        </span><span class="metric-value">15:14:53 30/06/2020 UTC</span></li></ul><ul><li><span class="metric-name">Collector Type:
+        </span><span class="metric-value">Driverless Perf system-wide sampling</span></li></ul><ul><li><span class="metric-name">CPU:
+        </span><span class="metric-value"/><ul><li><span class="metric-name">Name:
+        </span><span class="metric-value">Intel(R) Xeon(R) Processor code named Skylake</span></li></ul><ul><li><span class="metric-name">Frequency:
+        </span><span class="metric-value">3.392 GHz </span></li></ul><ul><li><span class="metric-name">Logical CPU Count:
+        </span><span class="metric-value">24</span></li></ul><ul><li><span class="metric-name">Max DRAM Single-Package Bandwidth:
+        </span><span class="metric-value">61.000 GB/s</span></li></ul></li></ul></li></ul></body></html>
+

@@ -1,5 +1,3 @@
-
-
 # P2.12_FinalProject
 
 The source code used in this project was taken from https://repository.prace-ri.eu/git/CodeVault/training-material/parallel-programming/MPI/-/tree/master/heat-equation. It solves two dimensional heat equation with MPI parallelization. The code features non-blocking point-to-point communication, user defined datatypes, collective communication, and parallel I/O with MPI I/O.
@@ -18,6 +16,26 @@ The Intel tool suite for performance analysis includes the following softwares:
 - **Intel Advisor**: *Design and optimize high-performing code for modern computer architectures. Effectively use more cores, vectorization, memory, and heterogeneous processing..*
 - **Intel VTune Profiler** or **VTune Amplifier** : *Locate performance bottlenecks fast. Advanced sampling and profiling techniques quickly analyze your code, isolate issues, and deliver insights for optimizing performance on modern processors.*
 - **Intel Trace Analyzer and Collector (ITAC)** : *a graphical tool for understanding MPI application behavior, quickly finding bottlenecks, improving correctness, and achieving high performance for parallel cluster applications based on Intel architecture.*
+
+## Table Of Contents
+   * [P2.12_FinalProject](#p212_finalproject)
+       * [0. Setup](#0-setup)
+           * [0.a) libpng](#0a-libpng)
+           * [0.b) Intel libraries](#0b-intel-libraries)
+           * [0.c) Intel tool suite](#0c-intel-tool-suite)
+           * [0.d) Running the program with MPI](#0d-running-the-program-with-mpi)
+       * [0.1 Setup on Intel® DevCloud](#01-setup-on-intel-devcloud)
+       * [1. Application Performance Snapshot](#1-application-performance-snapshot)
+            * [1.a) Code default version and compilation](#1a-code-default-version-and-compilation)
+            * [1.b) Increasing the problem size](#1b-increasing-the-problem-size)
+            * [1.c) png output as an origin of the MPI bounding](#1c-png-output-as-an-origin-of-the-mpi-bounding)
+            * [1.d) Improve FPU Utilization with compilation flags](#1d-improve-fpu-utilization-with-compilation-flags)
+            * [1.1 Application Performance Snapshot on Intel® DevCloud](#11-application-performance-snapshot-on-intel-devcloud)
+                * [1.1.a) Code default version and compilation](#11a-code-default-version-and-compilation)
+      * [2. Intel Advisor](#2-intel-advisor)
+         * [2.1 Intel Advisor on Intel® DevCloud](#21-intel-advisor-on-intel-devcloud)
+      * [3. Intel VTune Profiler](#3-intel-vtune-profiler)
+         * [3.1 Intel VTune Profiler on Intel® DevCloud](#31-intel-vtune-profiler-on-intel-devcloud)
 
 ## 0. Setup
 The experiments were done on the **Galileo** cluster of the **CINECA**.
@@ -80,6 +98,16 @@ And the program can then be run with:
 mpirun -np 4 ./heat_mpi
 ```
 
+### 0.1 Setup on Intel&reg; DevCloud
+This sections explains the setup done on Intel DevCloud cluster.
+
+As explained in previous section we install the `libpng` on DevCloud on our home directory. Although we can export the `libpng` path to `LD_LIBRARY_PATH`, here we modify the Makefile and add the link time flag, `LDFLAGS=-L/home/u44658/lib/` and add the includes to compile time with `INCS=-I/home/u44658/include/`, and we change the compiler from gnu `mpicc` to intel `mpiicc`.
+All other tools come preloaded on DevCloud, though we have to source the proper environmental variables, for Applications Performance Snapshot, we do `source $(locate apsvars.sh)`, and for Intel Advisor, we do `source $(locate advixe-vars.sh)`.
+We note that DevCloud only allows 1 nodes and 2 cores per user, so we enter a compute node interactively, like this: 
+```
+qsub -l nodes=1:batch:ppn=2 -d . -I
+```
+Also we note that DevCloud platform is **Skylake**, while Galileo is **Broadwell**.
 
 
 ## 1. Application Performance Snapshot 
@@ -181,6 +209,31 @@ At this point, APS identifies that the main remaining problem is the memory boun
 To get more insights on how to improve the floating point unit instructions per second, and the memory bound issue, it is time to change tool and see which indications we could get using  **Intel Advisor** and **Intel VTune Profiler**.
 
 
+### 1.1 Application Performance Snapshot on Intel&reg; DevCloud
+
+For comaprison reasons, here we put also the results from Intel DevClous.
+To get the analysis results with APS, first we run `aps` through `mpirun` and then generate the html reports.
+```
+mpirun -np <NP> aps ./heat_mpi
+aps --report=<results_directory>
+```
+
+#### 1.1.a) Code default version and compilation
+
+We use the same configurations as *section 1.a*, noting that we can only run at most with **2 MPI processes**. Here we can see the results with 2 mpi processes.
+
+![aps_mpirun_np1](DevCloud/APS/aps_mpirun_np2.png)
+
+Ignoring the differences coming from the fact that the two microarchitectures are differnet, we can also see that MPI time occupies around 47% of the total time, and hence the application is MPI bound at this stage. As explained in *section 1.b* this issue can be rectified by increasing the problem size, as with small problem size the overhead of MPI initializaton and communication cost is large compared to compute time, as can be seen from rank-to-rank communication matrix below, also this shows that there is a data transfer imbalance between two ranks:
+
+![aps_mpirun_np2_comm_matrix](DevCloud/APS/aps_mpirun_np2_comm_matrix.jpeg)
+
+To generate the figure above we use: 
+```
+aps-report -x --format=html <result_name>
+``` 
+Furthermore we can remove writing png files and reduce the MPI time even more, as explained in *section 1.c*.
+
 ## 
 
 ## 2. Intel Advisor
@@ -228,6 +281,24 @@ With this modification done, the next screen-shot of Intel Advisor indicates tha
 
 As expected, the other main time demanding component is `write_field` which is responsible of the `png` outputs.
 
+### 2.1 Intel Advisor on Intel&reg; DevCloud
+
+To collect `survey` results with Intel Advisor with 1 MPI process, we do:
+
+```
+mpirun -n 1 -gtool "advixe-cl -collect survey -no-auto-finalize -project-dir ./adv_np1:0" ./heat_mpi
+```
+
+and we also do the same for `tripcounts`, `map`, and`dependencies`, after that we pack the results and view the cumultive result in `advisor-gui`:
+
+![advisor_roofline](DevCloud/ADV/advisor_roofline_summary_np1.jpeg)
+
+Also below we can see the roofline chart:
+
+![advisor_roofline_chart](DevCloud/ADV/advisor_roofline_chart_np1.jpeg)
+
+##
+
 ## 3. Intel VTune Profiler
 
 Intel VTune Amplifier Performance Profiler was run for the `origin` and `restrict` versions of the source code, using the following commands :
@@ -265,3 +336,25 @@ There is an improvement in the time needed to do this critical loop but it remai
 ![VTU/restrict.Summary](CINECA-Galileo/VTU/np4_RC4000_NT2000_restrict_collect-hpc-performance_summary.png)
 
 ![VTU/restrict.bottom-up](CINECA-Galileo/VTU/np4_RC4000_NT2000_restrict_collect-hpc-performance_bottom-up.png)
+
+### 3.1 Intel VTune Profiler on Intel&reg; DevCloud
+
+To collect `hpc-performance`, and `hotspots` analysis with 2 MPI processes, we do:
+```
+mpirun -np 2 "vtune -collect hotspots -k sampling-mode=hw -trace-mpi -result-dir ./vtune_hotspots" ./heat_mpi
+mpirun -np 2 "vtune -collect hotspots -k sampling-mode=hw -trace-mpi -result-dir ./vtune_hpc-perf" ./heat_mpi
+```
+
+To generate the `summary` reports with vtune with 2 MPI processes, we do:
+
+```
+vtune -report summary -format=html -report-knob show-issues=false -r vtune_hotspots.s001-n007/ > vtune_summary_np2_hotspots.html
+vtune -report summary -format=html -report-knob show-issues=false -r vtune_hotspots.s001-n007/ > vtune_summary_np2_hpc-perf.html
+```
+
+We can see the results below:
+
+![vtune_summary_np2](DevCloud/VTU/vtune_summary_np2.png)
+![vtune_hotspots_np2](DevCloud/VTU/vtune_htospots_np2.jpg)
+
+This results were obtained without any optimizations discussed before. From VTune Porfiler it's evident that *effective physical and logical core utilization is low*, which can be explained by the low problem size we used here, which was a 1000 X 2000 grid and moreover we can see that at this stage it's *memory bound*, which results again from low problem size and overhead from MPI initializations and commmunications. Also we can see that `evolve_interior` is the most hotspot in our application.
