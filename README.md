@@ -1,5 +1,5 @@
 # P2.12_FinalProject
-Group Members: *Celia Laurent*, *Gianluca Coidessa*, *Elena De Paoli*, *Nesrin Yousfi*, *Saeid Aliei* .
+Group Members: *Celia Laurent*, *Gianluca Coidessa*, *Elena De Paoli*, *Nesrine Yousfi*, *Saeid Aliei* .
 
 The source code used in this project was taken from https://repository.prace-ri.eu/git/CodeVault/training-material/parallel-programming/MPI/-/tree/master/heat-equation. It solves two dimensional heat equation with MPI parallelization. The code features non-blocking point-to-point communication, user defined datatypes, collective communication, and parallel I/O with MPI I/O.
 
