@@ -355,6 +355,6 @@ vtune -report summary -format=html -report-knob show-issues=false -r vtune_hotsp
 We can see the results below:
 
 ![vtune_summary_np2](DevCloud/VTU/vtune_summary_np2.png)
-![vtune_summary_np2](DevCloud/VTU/vtune_htospots_np2.png)
+![vtune_hotspots_np2](DevCloud/VTU/vtune_htospots_np2.jpg)
 
 This results were obtained without any optimizations discussed before. From VTune Porfiler it's evident that *effective physical and logical core utilization is low*, which can be explained by the low problem size we used here, which was a 1000 X 2000 grid and moreover we can see that at this stage it's *memory bound*, which results again from low problem size and overhead from MPI initializations and commmunications. 
