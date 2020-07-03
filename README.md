@@ -17,23 +17,22 @@ The Intel tool suite for performance analysis includes the following softwares:
 - **Intel VTune Profiler** or **VTune Amplifier** : *Locate performance bottlenecks fast. Advanced sampling and profiling techniques quickly analyze your code, isolate issues, and deliver insights for optimizing performance on modern processors.*
 - **Intel Trace Analyzer and Collector (ITAC)** : *a graphical tool for understanding MPI application behavior, quickly finding bottlenecks, improving correctness, and achieving high performance for parallel cluster applications based on Intel architecture.*
 
----
 ## Table Of Contents
-   * [P2.12_FinalProject](#p212_finalproject)
-       * [0. Setup](#0-setup)
+   <!--* [P2.12_FinalProject](#p212_finalproject)-->
+    * [0. Setup](#0-setup)
            * [0.a) libpng](#0a-libpng)
            * [0.b) Intel libraries](#0b-intel-libraries)
            * [0.c) Intel tool suite](#0c-intel-tool-suite)
            * [0.d) Running the program with MPI](#0d-running-the-program-with-mpi)
-       * [0.1 Setup on Intel® DevCloud](#01-setup-on-intel-devcloud)
-       * [1. Application Performance Snapshot](#1-application-performance-snapshot)
+      * [0.1 Setup on Intel® DevCloud](#01-setup-on-intel-devcloud)
+    * [1. Application Performance Snapshot](#1-application-performance-snapshot)
             * [1.a) Code default version and compilation](#1a-code-default-version-and-compilation)
             * [1.b) Increasing the problem size](#1b-increasing-the-problem-size)
             * [1.c) png output as an origin of the MPI bounding](#1c-png-output-as-an-origin-of-the-mpi-bounding)
             * [1.d) Improve FPU Utilization with compilation flags](#1d-improve-fpu-utilization-with-compilation-flags)
-            * [1.1 Application Performance Snapshot on Intel® DevCloud](#11-application-performance-snapshot-on-intel-devcloud)
+          * [1.1 Application Performance Snapshot on Intel® DevCloud](#11-application-performance-snapshot-on-intel-devcloud)
                 * [1.1.a) Code default version and compilation](#11a-code-default-version-and-compilation)
-      * [2. Intel Advisor](#2-intel-advisor)
+    * [2. Intel Advisor](#2-intel-advisor)
          * [2.1 Intel Advisor on Intel® DevCloud](#21-intel-advisor-on-intel-devcloud)
       * [3. Intel VTune Profiler](#3-intel-vtune-profiler)
          * [3.1 Intel VTune Profiler on Intel® DevCloud](#31-intel-vtune-profiler-on-intel-devcloud)
