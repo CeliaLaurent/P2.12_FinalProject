@@ -1,4 +1,5 @@
 # P2.12_FinalProject
+Group Members: *Celia Laurent*, *Gianluca Coidessa*, *Elena De Paoli*, *Nesrin Yousfi*, *Saeid Aliei* .
 
 The source code used in this project was taken from https://repository.prace-ri.eu/git/CodeVault/training-material/parallel-programming/MPI/-/tree/master/heat-equation. It solves two dimensional heat equation with MPI parallelization. The code features non-blocking point-to-point communication, user defined datatypes, collective communication, and parallel I/O with MPI I/O.
 
@@ -20,17 +21,12 @@ The Intel tool suite for performance analysis includes the following softwares:
 ## Table Of Contents
    * [P2.12_FinalProject](#p212_finalproject)
       * [Setup](#setup)
-               * [Setup on CINECA's Galileo cluster](#setup-on-cinecas-galileo-cluster)
-
-                  * [a) libpng](#a-libpng)
-
-                  * [b) Intel libraries](#b-intel-libraries)
-
-                  * [c) Intel tool suite](#c-intel-tool-suite)
-
-                  * [d) Running the program with MPI](#d-running-the-program-with-mpi)
-
-               * [Setup on Intel® DevCloud](#setup-on-intel-devcloud)
+         * [Setup on CINECA's Galileo cluster](#setup-on-cinecas-galileo-cluster)
+            * [a) libpng](#a-libpng)
+            * [b) Intel libraries](#b-intel-libraries)
+            * [c) Intel tool suite](#c-intel-tool-suite)
+            * [d) Running the program with MPI](#d-running-the-program-with-mpi)
+       * [Setup on Intel® DevCloud](#setup-on-intel-devcloud)
       * [1. Application Performance Snapshot](#1-application-performance-snapshot)
          * [1.1 Application Performance Snapshot on Galileo](#11-application-performance-snapshot-on-galileo)
             * [1.1.a) Code default version and compilation](#11a-code-default-version-and-compilation)
