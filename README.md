@@ -339,12 +339,22 @@ There is an improvement in the time needed to do this critical loop but it remai
 
 ### 3.1 Intel VTune Profiler on Intel&reg; DevCloud
 
-To generate the a `summary` report with vtune with 2 MPI processes, we do:
+To collect `hpc-performance`, and `hotspots` analysis with 2 MPI processes, we do:
+```
+mpirun -np 2 "vtune -collect hotspots -k sampling-mode=hw -trace-mpi -result-dir ./vtune_hotspots" ./heat_mpi
+mpirun -np 2 "vtune -collect hotspots -k sampling-mode=hw -trace-mpi -result-dir ./vtune_hpc-perf" ./heat_mpi
+```
+
+To generate the `summary` reports with vtune with 2 MPI processes, we do:
 
 ```
-vtune -report summary -format=html -report-knob show-issues=false -r vtune_test.s001-n007/ > vtune_summary_np2.html
+vtune -report summary -format=html -report-knob show-issues=false -r vtune_hotspots.s001-n007/ > vtune_summary_np2_hotspots.html
+vtune -report summary -format=html -report-knob show-issues=false -r vtune_hotspots.s001-n007/ > vtune_summary_np2_hpc-perf.html
 ```
 
 We can see the results below:
 
 ![vtune_summary_np2](DevCloud/VTU/vtune_summary_np2.png)
+![vtune_summary_np2](DevCloud/VTU/vtune_htospots_np2.png)
+
+This results were obtained without any optimizations discussed before. From VTune Porfiler it's evident that *effective physical and logical core utilization is low*, which can be explained by the low problem size we used here, which was a 1000 X 2000 grid and moreover we can see that at this stage it's *memory bound*, which results again from low problem size and overhead from MPI initializations and commmunications. 
