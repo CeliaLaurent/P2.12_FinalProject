@@ -240,9 +240,9 @@ advixe-cl --snapshot --project-dir ./adv_${CASE} --pack --cache-sources --cache-
 
 This allowed to obtain the following analysis for the original source code:
 
-![origin.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin_Summary.jpg)
+![origin.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin.Summary.png)
 
-![origin.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin_Survey_and_Roofline.png)
+![origin.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin.Survey_and_Roofline.png)
 
 Intel Advisor identifies that the `evolve_interior` and `evolve_edges` functions contain a loop that is not vectorized because the compiler assumed that there might be data dependency.
 
@@ -257,9 +257,9 @@ void evolve_edges(field *__restrict__ curr, field *__restrict__ prev, double a, 
 
 With this modification done, the next screen-shot of Intel Advisor indicates that the loops were vectorized using avx2 with a 100% of efficiency, and in facts the time to run `evolve_interior` is reduced almost by a factor 2.
 
-![restrict.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_restrict_Summary.png)
+![restrict.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_restrict.Summary.png)
 
-![restrict.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_restrict_Survey_and_Roofline.png)
+![restrict.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_restrict.Survey_and_Roofline.png)
 
 As expected, the other main time demanding component is `write_field` which is responsible of the `png` outputs.
 
