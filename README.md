@@ -1,4 +1,5 @@
 # P2.12_FinalProject
+Group Members: *Celia Laurent*, *Gianluca Coidessa*, *Elena De Paoli*, *Nesrin Yousfi*, *Saeid Aliei* .
 
 The source code used in this project was taken from https://repository.prace-ri.eu/git/CodeVault/training-material/parallel-programming/MPI/-/tree/master/heat-equation. It solves two dimensional heat equation with MPI parallelization. The code features non-blocking point-to-point communication, user defined datatypes, collective communication, and parallel I/O with MPI I/O.
 
@@ -18,9 +19,28 @@ The Intel tool suite for performance analysis includes the following softwares:
 - **Intel Trace Analyzer and Collector (ITAC)** : *a graphical tool for understanding MPI application behavior, quickly finding bottlenecks, improving correctness, and achieving high performance for parallel cluster applications based on Intel architecture.*
 
 ## Table Of Contents
-
-[TOC]
-
+   * [P2.12_FinalProject](#p212_finalproject)
+      * [Setup](#setup)
+         * [Setup on CINECA's Galileo cluster](#setup-on-cinecas-galileo-cluster)
+            * [a) libpng](#a-libpng)
+            * [b) Intel libraries](#b-intel-libraries)
+            * [c) Intel tool suite](#c-intel-tool-suite)
+            * [d) Running the program with MPI](#d-running-the-program-with-mpi)
+       * [Setup on Intel® DevCloud](#setup-on-intel-devcloud)
+      * [1. Application Performance Snapshot](#1-application-performance-snapshot)
+         * [1.1 Application Performance Snapshot on Galileo](#11-application-performance-snapshot-on-galileo)
+            * [1.1.a) Code default version and compilation](#11a-code-default-version-and-compilation)
+            * [1.1.b) Increasing the problem size](#11b-increasing-the-problem-size)
+            * [1.1.c) png output as an origin of the MPI bounding](#11c-png-output-as-an-origin-of-the-mpi-bounding)
+            * [1.1.d) Improve FPU Utilization with compilation flags](#11d-improve-fpu-utilization-with-compilation-flags)
+         * [1.2 Application Performance Snapshot on Intel® DevCloud](#12-application-performance-snapshot-on-intel-devcloud)
+            * [1.2.a) Code default version and compilation](#12a-code-default-version-and-compilation)
+      * [2. Intel Advisor](#2-intel-advisor)
+         * [2.1 Intel Advisor on Galileo](#21-intel-advisor-on-galileo)
+         * [2.2 Intel Advisor on Intel® DevCloud](#22-intel-advisor-on-intel-devcloud)
+      * [3. Intel VTune Profiler](#3-intel-vtune-profiler)
+         * [3.1 Intel VTune Profiler on Galileo](#31-intel-vtune-profiler-on-galileo)
+         * [3.2 Intel VTune Profiler on Intel® DevCloud](#32-intel-vtune-profiler-on-intel-devcloud)
 ## Setup
 
 ##### Setup on CINECA's Galileo cluster
