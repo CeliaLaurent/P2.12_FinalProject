@@ -205,9 +205,9 @@ advixe-cl --snapshot --project-dir ./adv_${CASE} --pack --cache-sources --cache-
 
 This allowed to obtain the following analysis for the original source code:
 
-![origin.Summary](CINECA-Galileo/ADVI/adv_np2_rowscols6000_NT2000_origin.Summary.png)
+![origin.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin.Summary.png)
 
-![origin.Survey_and_Roofline](CINECA-Galileo/ADVI/adv_np2_rowscols6000_NT2000_origin.Survey_and_Roofline.png)
+![origin.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_origin.Survey_and_Roofline.png)
 
 Intel Advisor identifies that the `evolve_interior` and `evolve_edges` functions contain a loop that is not vectorized because the compiler assumed that there might be data dependency.
 
@@ -222,9 +222,9 @@ void evolve_edges(field *__restrict__ curr, field *__restrict__ prev, double a, 
 
 With this modification done, the next screen-shot of Intel Advisor indicates that the loops were vectorized using avx2 with a 100% of efficiency, and in facts the time to run `evolve_interior` is reduced almost by a factor 2.
 
-![restrict.Summary](CINECA-Galileo/ADVI/adv_np2_rowscols6000_NT2000_restrict.Summary.png)
+![restrict.Summary](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_restrict.Summary.png)
 
-![restrict.Survey_and_Roofline](CINECA-Galileo/ADVI/adv_np2_rowscols6000_NT2000_restrict.Survey_and_Roofline.png)
+![restrict.Survey_and_Roofline](CINECA-Galileo/ADV/adv_np2_rowscols6000_NT2000_restrict.Survey_and_Roofline.png)
 
 As expected, the other main time demanding component is `write_field` which is responsible of the `png` outputs.
 
@@ -255,12 +255,13 @@ Among the time to solution: 117 seconds, the time where no CPU is active is very
 
 This analysis confirms what has been previously identified : the png writting and consequent MPI wait, coupled with the  memory bounds make the MPI balancing very unefficient.
 
-![VTAMP/origin.Summary](CINECA-Galileo/VTAMP/np4_RC4000_NT2000_origin_collect-hpc-performance_summary.png)![VTAMP/origin.bottom-up](CINECA-Galileo/VTAMP/np4_RC4000_NT2000_origin_collect-hpc-performance_bottom-up.png)
+![VTU/origin.Summary](CINECA-Galileo/VTU/np4_RC4000_NT2000_origin_collect-hpc-performance_summary.png)
+![VTU/origin.bottom-up](CINECA-Galileo/VTU/np4_RC4000_NT2000_origin_collect-hpc-performance_bottom-up.png)
 
 We can see that using the `restrict` version the code is slightly more efficient, the loop in `evolve_interior` pass from 86 seconds to 69 seconds, however the improvement is smaller than what was observed using Advisor. We can see that for the `restrict` version this loop is actually 100% vectorized (avx2 256pack), against 100% scalar in the `origin` version and the global FPU Utilization slightly increased from 7% to 10%. 
 
 There is an improvement in the time needed to do this critical loop but it remains small, because vectorizing this loop makes it become completely memory bounded, in facts the global memory bound of the code that pass from 10% in the `origin` version to 40% in the `restrict` version.
 
-![VTAMP/restrict.Summary](CINECA-Galileo/VTAMP/np4_RC4000_NT2000_restrict_collect-hpc-performance_summary.png)
+![VTU/restrict.Summary](CINECA-Galileo/VTU/np4_RC4000_NT2000_restrict_collect-hpc-performance_summary.png)
 
-![VTAMP/restrict.bottom-up](CINECA-Galileo/VTAMP/np4_RC4000_NT2000_restrict_collect-hpc-performance_bottom-up.png)
+![VTU/restrict.bottom-up](CINECA-Galileo/VTU/np4_RC4000_NT2000_restrict_collect-hpc-performance_bottom-up.png)
