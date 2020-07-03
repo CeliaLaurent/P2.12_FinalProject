@@ -18,31 +18,18 @@ The Intel tool suite for performance analysis includes the following softwares:
 - **Intel Trace Analyzer and Collector (ITAC)** : *a graphical tool for understanding MPI application behavior, quickly finding bottlenecks, improving correctness, and achieving high performance for parallel cluster applications based on Intel architecture.*
 
 ## Table Of Contents
-   * [P2.12_FinalProject](#p212_finalproject)
-       * [0. Setup](#0-setup)
-           * [0.a) libpng](#0a-libpng)
-           * [0.b) Intel libraries](#0b-intel-libraries)
-           * [0.c) Intel tool suite](#0c-intel-tool-suite)
-           * [0.d) Running the program with MPI](#0d-running-the-program-with-mpi)
-       * [0.1 Setup on Intel® DevCloud](#01-setup-on-intel-devcloud)
-       * [1. Application Performance Snapshot](#1-application-performance-snapshot)
-            * [1.a) Code default version and compilation](#1a-code-default-version-and-compilation)
-            * [1.b) Increasing the problem size](#1b-increasing-the-problem-size)
-            * [1.c) png output as an origin of the MPI bounding](#1c-png-output-as-an-origin-of-the-mpi-bounding)
-            * [1.d) Improve FPU Utilization with compilation flags](#1d-improve-fpu-utilization-with-compilation-flags)
-            * [1.1 Application Performance Snapshot on Intel® DevCloud](#11-application-performance-snapshot-on-intel-devcloud)
-                * [1.1.a) Code default version and compilation](#11a-code-default-version-and-compilation)
-      * [2. Intel Advisor](#2-intel-advisor)
-         * [2.1 Intel Advisor on Intel® DevCloud](#21-intel-advisor-on-intel-devcloud)
-      * [3. Intel VTune Profiler](#3-intel-vtune-profiler)
-         * [3.1 Intel VTune Profiler on Intel® DevCloud](#31-intel-vtune-profiler-on-intel-devcloud)
 
-## 0. Setup
+[TOC]
+
+## Setup
+
+##### Setup on CINECA's Galileo cluster
+
 The experiments were done on the **Galileo** cluster of the **CINECA**.
 
 `sourceme.sh` is a file provided in the main folder of this repository which can be sourced (`source sourceme.sh`) in order to run automatically the setup described in this section.
 
-##### 0.a) libpng
+###### a) libpng
 
 The source code requires the libpng library to be installed, this was done by:
 ```
@@ -58,7 +45,7 @@ Then, in order to run, the program needs to know at run time what is the path to
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/lib
 ```
 
-##### 0.b) Intel libraries
+###### b) Intel libraries
 
 To enable the compilation of the source code, the following modules had to be loaded:
 
@@ -82,7 +69,7 @@ mpicc -O3 -Wall  -c pngwriter.c -o pngwriter.o -I /galileo/home/userexternal/cla
 mpicc -O3 -Wall  core.o setup.o utilities.o io.o main.o pngwriter.o -o heat_mpi  -lpng -lm -L /galileo/home/userexternal/clauren1/opt/mylibs/libpng-1.6.37/lib
 
 ```
-##### 0.c) Intel tool suite
+###### c) Intel tool suite
 
 On the CINECA- Galileo cluster the various Intel Performance analysis tools can be accessed after loading the vtune module:
 
@@ -90,7 +77,7 @@ On the CINECA- Galileo cluster the various Intel Performance analysis tools can 
 module load vtune/2018
 ```
 
-##### 0.d) Running the program with MPI
+###### d) Running the program with MPI
 
 And the program can then be run with:
 
@@ -98,7 +85,7 @@ And the program can then be run with:
 mpirun -np 4 ./heat_mpi
 ```
 
-### 0.1 Setup on Intel&reg; DevCloud
+##### Setup on Intel&reg; DevCloud
 This sections explains the setup done on Intel DevCloud cluster.
 
 As explained in previous section we install the `libpng` on DevCloud on our home directory. Although we can export the `libpng` path to `LD_LIBRARY_PATH`, here we modify the Makefile and add the link time flag, `LDFLAGS=-L/home/u44658/lib/` and add the includes to compile time with `INCS=-I/home/u44658/include/`, and we change the compiler from gnu `mpicc` to intel `mpiicc`.
@@ -114,7 +101,9 @@ Also we note that DevCloud platform is **Skylake**, while Galileo is **Broadwell
 
 This tool is part of the Intel VTune Amplifier suite.
 
-#### 1.a) Code default version and compilation
+### 1.1 Application Performance Snapshot on Galileo
+
+#### 1.1.a) Code default version and compilation
 As a first step, the default configuration of the program using **2000 rows and columns and 500 timesteps** was evaluated with **APS** using **4 MPI processes**. The Makefile uses the compilation flags `-O3` which sets up level-3 vectorialization and `-Wall` enabling compiler Warning messages. The results of this analysis can be found in the folder `aps_np4_rowscols2000_NT500_COPT`:
 
 ![APS](CINECA-Galileo/APS/aps_np4_rowscols2000_NT500_COPT.png)
@@ -123,7 +112,7 @@ The main diagnostic indicates that the program is MPI bounded.
 
 Before looking any further, given the fact that 49.97% of the time is spent in the MPI operations, and given the high costs of the MPI Init and MPI Finalize functions, let's try to increase the size of the problem, given that running MPI parallel application makes sense only if the problem size is large enough, otherwise the overhead caused by the MPI instructions is too high respect to the computational time.
 
-#### 1.b) Increasing the problem size 
+#### 1.1.b) Increasing the problem size 
 The domain size and time steps were increased using **6000 rows and columns** and **2000 timesteps**, keeping the same number of **MPI processes : 4** and the same compilation flags as the default source code.
 
 The results of the APS analysis are in folder `aps_np4_rowscols6000_NT2000_COPT`.
@@ -157,7 +146,7 @@ for (iter = iter0; iter < iter0 + nsteps; iter++) {
 
 The `Waitall` happens during the `exchange_finalize` function. Some MPI process might be slower than the others, we can exclude reasons linked to domain partitioning, given that the physics is resolved on every element of the computational grid, and given that the computational domain is squared and was divided in 2x2 blocks, so that all the rank should be doing the same number of exchanges on the borders of the blocks.  As a first guess, the overheads that were observed  could be due to the writing of the png file that is done by the master process during the call of the `write_field` function. 
 
-#### 1.c) png output as an origin of the MPI bounding
+#### 1.1.c) png output as an origin of the MPI bounding
 
 To asses if the output of the png files could or not be the origin of the MPI imbalance that makes the code MPI bound, let's run the program on the same configuration, but removing the output of the png files. The results of this analysis are in the folder `aps_results_np4_rowscols6000_NT2000_COPTnoimgwritting` and the APS summary is the following:
 
@@ -171,7 +160,7 @@ To cope with this, there could be different solutions:
 - or an additional process could be dedicated to the writting of the png files, it would gather the fields from the computing processes and handle the image writting while the other nodes compute the next set of iterations.
 - another solution could be to write in a distributed way a binary file (such as the restart file) containing the desired fields and produce the graphics offline, as a post-treatment done by another program.
 
-#### 1.d) Improve FPU Utilization with compilation flags
+#### 1.1.d) Improve FPU Utilization with compilation flags
 
 Once removed the origin of the MPI bound, APS identifies that the main remaining problem is the underutilization of the Floating Point Unit : 7.15% while the target is >50%.
 
@@ -209,7 +198,7 @@ At this point, APS identifies that the main remaining problem is the memory boun
 To get more insights on how to improve the floating point unit instructions per second, and the memory bound issue, it is time to change tool and see which indications we could get using  **Intel Advisor** and **Intel VTune Profiler**.
 
 
-### 1.1 Application Performance Snapshot on Intel&reg; DevCloud
+### 1.2 Application Performance Snapshot on Intel&reg; DevCloud
 
 For comaprison reasons, here we put also the results from Intel DevClous.
 To get the analysis results with APS, first we run `aps` through `mpirun` and then generate the html reports.
@@ -218,7 +207,7 @@ mpirun -np <NP> aps ./heat_mpi
 aps --report=<results_directory>
 ```
 
-#### 1.1.a) Code default version and compilation
+#### 1.2.a) Code default version and compilation
 
 We use the same configurations as *section 1.a*, noting that we can only run at most with **2 MPI processes**. Here we can see the results with 2 mpi processes.
 
@@ -231,12 +220,14 @@ Ignoring the differences coming from the fact that the two microarchitectures ar
 To generate the figure above we use: 
 ```
 aps-report -x --format=html <result_name>
-``` 
+```
 Furthermore we can remove writing png files and reduce the MPI time even more, as explained in *section 1.c*.
 
 ## 
 
 ## 2. Intel Advisor
+
+### 2.1 Intel Advisor on Galileo
 
 To test Intel Advisor, the original source code version (writing the `png` files) was restored, the `miicc` compiler was used with the optimization flags `-Ofast -march=core-avx2`  adding as well the flags `-qopt-report=5 -qopt-report-phase=all -g` so that compilation produces additional informations allowing Intel Advisor to get more insights on the source code.
 
@@ -281,7 +272,7 @@ With this modification done, the next screen-shot of Intel Advisor indicates tha
 
 As expected, the other main time demanding component is `write_field` which is responsible of the `png` outputs.
 
-### 2.1 Intel Advisor on Intel&reg; DevCloud
+### 2.2 Intel Advisor on Intel&reg; DevCloud
 
 To collect `survey` results with Intel Advisor with 1 MPI process, we do:
 
@@ -297,9 +288,11 @@ Also below we can see the roofline chart:
 
 ![advisor_roofline_chart](DevCloud/ADV/advisor_roofline_chart_np1.jpeg)
 
-##
+
 
 ## 3. Intel VTune Profiler
+
+### 3.1 Intel VTune Profiler on Galileo
 
 Intel VTune Amplifier Performance Profiler was run for the `origin` and `restrict` versions of the source code, using the following commands :
 
@@ -337,7 +330,7 @@ There is an improvement in the time needed to do this critical loop but it remai
 
 ![VTU/restrict.bottom-up](CINECA-Galileo/VTU/np4_RC4000_NT2000_restrict_collect-hpc-performance_bottom-up.png)
 
-### 3.1 Intel VTune Profiler on Intel&reg; DevCloud
+### 3.2 Intel VTune Profiler on Intel&reg; DevCloud
 
 To collect `hpc-performance`, and `hotspots` analysis with 2 MPI processes, we do:
 ```
