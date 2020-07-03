@@ -164,7 +164,7 @@ To cope with this, there could be different solutions:
 
 Once removed the origin of the MPI bound, APS identifies that the main remaining problem is the underutilization of the Floating Point Unit : 7.15% while the target is >50%.
 
-In the FPU Utilization box, APS indicates that only 50% of the floating point vectorization capacity is done, and that all the floating points instructions are packed in 128bits, and gives the following additional informations:
+In the FPU Utilization box, APS indicates that only 50% of the floating point vectorization capacity is done, and that all the floating points instructions that are packed use a 128bits vectorization, and gives the following additional informations:
 
 > *A significant fraction of floating point arithmetic vector instructions* 
 > *executed with partial vector load. A possible reason is compilation with*
@@ -173,7 +173,7 @@ In the FPU Utilization box, APS indicates that only 50% of the floating point ve
 
 The first thing to do is to add the compilation flags allowing the compiler to take into consideration the specific CPU architecture on which we are running and compiling in order to take advantage of the 256-bits vectorization capacities of avx2.
 
-To do so, the flags `-march=native` and `-mavx2` were added into the Makefile; the results of the APS analysis for this new run can be found in folder `aps_results_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting` and the APS summary is the following:
+To do so, the flags `-march=core-avx2` were added into the Makefile; the results of the APS analysis for this new run can be found in folder `aps_results_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting` and the APS summary is the following:
 
 ![APS](CINECA-Galileo/APS/aps_np4_rowscols6000_NT2000_COPT-marchnative-mavx2_noimgwritting.png)
 
